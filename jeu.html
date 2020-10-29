@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="fr" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <title>Jeu du lancé de dé</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Chargement...</h1>
+
+      <div class="dice">
+        <p>Joueur 1</p>
+        <img class="img1" src="" />
+      </div>
+
+      <div class="dice">
+        <p>Joueur 2</p>
+        <img class="img2" src="" />
+      </div>
+    </div>
+    <script>
+      // Quand le document est chargé
+      document.addEventListener("DOMContentLoaded", function() {
+        // Déclarations variables
+        let joueur1, joueur2, i = 0
+        let xhr = new XMLHttpRequest();
+        // Lien de l'API
+        let url = "https://www.random.org/integers/?num=1&min=1&max=6&col=1&base=10&format=plain&rnd=new"
+        // selecteur du H1
+        let h1 = document.getElementsByTagName('h1')[0]
+        xhr.onreadystatechange = function() {
+          // readyState 4 means the request is done.
+          if (xhr.readyState === 4) {
+            // status 200 is a successful return.
+            if (xhr.status === 200) {
+              // Réponse de l'API
+              let numAPI = xhr.response
+              // Si i = 0, donc 1er appel de l'API
+              if (i === 0) {
+                // On enregistre la réponse pour le joueur 1
+                joueur1 = numAPI
+                // On ajoute 1 a la variable i
+                i++
+                // On relance l'API pour le joueur 2
+                sendDes(url)
+              } else if(i === 1) { // Si i = 1, con 2eme appel de l'API
+                // On enregistre la réponse pour le joueur 2
+                joueur2 = numAPI
+                // On ajoute 1 a la variable i
+                i++
+              }
+              // Si i = 2, donc API a été appelée 2 fois
+              if (i === 2) {
+                console.log("joueur 1 = "+joueur1);
+                console.log("joueur 2 = "+joueur2);
+                // image du dé pour le joueur 1
+                document.getElementsByClassName('img1')[0].setAttribute('src', 'images/dice'+joueur1+'.png')
+                // image du dé pour le joueur 2
+                document.getElementsByClassName('img2')[0].setAttribute('src', 'images/dice'+joueur2+'.png')
+                if (joueur1 < joueur2) { // Si joueur1 est plus petit que joueur2
+                  h1.innerHTML = 'Joueur 2 gagne'
+                } else if(joueur1 > joueur2){ // Si joueur2 est plus petit que joueur1
+                  h1.innerHTML = 'Joueur 1 gagne'
+                } else if (joueur1 === joueur2) { // Si joueur1 est egal a joueur2
+                  h1.innerHTML = 'égalité'
+                }
+              }
+            }
+          }
+        };
+        // Fonction pour lancé l'API
+        function sendDes(url){
+          xhr.open("GET", url);
+          xhr.send(null);
+        }
+        sendDes(url)
+      });
+    </script>
+  </body>
+</html>
